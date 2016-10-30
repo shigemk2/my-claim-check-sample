@@ -4,6 +4,14 @@ import java.util.UUID
 
 import akka.actor._
 
+case class Part(name: String)
+
+case class CompositeMessage(id: String, part1: Part, part2: Part, part3: Part)
+
+case class ProcessStep(id: String, claimCheck: ClaimCheck)
+
+case class StepCompleted(id: String, claimCheck: ClaimCheck, stepName: String)
+
 object ClaimCheckDriver extends CompletableApp(5) {
 }
 
