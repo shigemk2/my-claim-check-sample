@@ -14,3 +14,6 @@ case class ClaimCheck() {
     "ClaimCheck(" + number + ")"
   }
 }
+
+case class CheckedItem(claimCheck: ClaimCheck, businessId: String, parts: Map[String, Any])
+case class CheckedPart(claimCheck: ClaimCheck, part: Any)
