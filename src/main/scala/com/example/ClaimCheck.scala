@@ -87,3 +87,45 @@ class Process(steps: Vector[ActorRef], itemChecker: ItemChecker) extends Actor {
       println(s"Process: received unexpected: $message")
   }
 }
+
+class Step1(itemChecker: ItemChecker) extends Actor {
+  def receive = {
+    case processStep: ProcessStep =>
+      val claimedPart = itemChecker.claimPart(processStep.claimCheck, "partA1")
+
+      println(s"Step1: processing $processStep\n with $claimedPart")
+
+      sender ! StepCompleted(processStep.id, processStep.claimCheck, "step1")
+
+    case message: Any =>
+      println(s"Step1: received unexpected: $message")
+  }
+}
+
+class Step2(itemChecker: ItemChecker) extends Actor {
+  def receive = {
+    case processStep: ProcessStep =>
+      val claimedPart = itemChecker.claimPart(processStep.claimCheck, "partB2")
+
+      println(s"Step2: processing $processStep\n with $claimedPart")
+
+      sender ! StepCompleted(processStep.id, processStep.claimCheck, "step2")
+
+    case message: Any =>
+      println(s"Step2: received unexpected: $message")
+  }
+}
+
+class Step3(itemChecker: ItemChecker) extends Actor {
+  def receive = {
+    case processStep: ProcessStep =>
+      val claimedPart = itemChecker.claimPart(processStep.claimCheck, "partC3")
+
+      println(s"Step3: processing $processStep\n with $claimedPart")
+
+      sender ! StepCompleted(processStep.id, processStep.claimCheck, "step3")
+
+    case message: Any =>
+      println(s"Step3: received unexpected: $message")
+  }
+}
