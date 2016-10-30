@@ -12,7 +12,19 @@ case class ProcessStep(id: String, claimCheck: ClaimCheck)
 
 case class StepCompleted(id: String, claimCheck: ClaimCheck, stepName: String)
 
-object ClaimCheckDriver extends CompletableApp(5) {
+object ClaimCheckDriver extends CompletableApp(3) {
+  val itemChecker = new ItemChecker()
+
+  val step1 = system.actorOf(Props(classOf[Step1], itemChecker), "step1")
+  val step2 = system.actorOf(Props(classOf[Step2], itemChecker), "step2")
+  val step3 = system.actorOf(Props(classOf[Step3], itemChecker), "step3")
+
+  val process = system.actorOf(Props(classOf[Process], Vector(step1, step2, step3), itemChecker), "process")
+
+  process ! CompositeMessage("ABC", Part("partA1"), Part("partB2"), Part("partC3"))
+
+  awaitCompletion
+  println("ClaimCheck: is completed.")
 }
 
 case class ClaimCheck() {
