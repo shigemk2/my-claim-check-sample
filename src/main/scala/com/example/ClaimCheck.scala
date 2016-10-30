@@ -53,3 +53,37 @@ class ItemChecker {
     }
   }
 }
+
+class Process(steps: Vector[ActorRef], itemChecker: ItemChecker) extends Actor {
+  var stepIndex = 0
+
+  def receive = {
+    case message: CompositeMessage =>
+      val parts =
+        Map(
+          message.part1.name -> message.part1,
+          message.part2.name -> message.part2,
+          message.part3.name -> message.part3
+        )
+
+      val checkedItem = itemChecker.checkedItemFor(message.id, parts)
+
+      itemChecker.checkItem(checkedItem)
+
+      steps(stepIndex) ! ProcessStep(message.id, checkedItem.claimCheck)
+
+    case message: StepCompleted =>
+      stepIndex += 1
+
+      if (stepIndex < steps.size) {
+        steps(stepIndex) ! ProcessStep(message.id, message.claimCheck)
+      } else {
+        itemChecker.removeItem(message.claimCheck)
+      }
+
+      ClaimCheckDriver.completedStep()
+
+    case message: Any =>
+      println(s"Process: received unexpected: $message")
+  }
+}
